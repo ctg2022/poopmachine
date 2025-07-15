@@ -139,6 +139,13 @@
 		function deleteMessage(index) {
 			document.querySelector('message-list').deleteMessage(index);
 		}
+
+		let el = document.querySelector('label[for=body]');
+		el.addEventListener('copy', (evt) => {
+			let vid = document.createElement('video');
+			vid.src = "./maybz/bop3jr.mov"
+			document.querySelector('message-list').append(vid);
+		})
 	</script>
 </body>
 
