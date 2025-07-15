@@ -144,7 +144,11 @@
 		el.addEventListener('copy', (evt) => {
 			console.log('hereeeeee');
 			let vid = document.createElement('video');
-			vid.src = ["./maybz/bop3jr.mov", "./maybz/boppington1.mov"][Math.floor(Math.random() * 2)],
+			vid.src = [
+				"./maybz/bop3jr.mov",
+				"./maybz/boppington1.mov",
+				"./maybz/ad0djo8O_720p.mp4",
+			][Math.floor(Math.random() * 3)],
 			vid.setAttribute('muted', true)
 			vid.setAttribute('loop', true)
 			vid.setAttribute('controls', true)
