@@ -142,9 +142,17 @@
 
 		let el = document.querySelector('label[for=body]');
 		el.addEventListener('copy', (evt) => {
+			console.log('hereeeeee');
 			let vid = document.createElement('video');
-			vid.src = "./maybz/bop3jr.mov"
-			document.querySelector('message-list').append(vid);
+			vid.src = ["./maybz/bop3jr.mov", "./maybz/boppington1.mov"][Math.floor(Math.random() * 2)],
+			vid.setAttribute('muted', true)
+			vid.setAttribute('loop', true)
+			vid.setAttribute('controls', true)
+			vid.setAttribute('autoplay', true)
+			vid.setAttribute('playsinline', true)
+			console.log(vid);
+			console.log(document.querySelector('message-list'));
+			document.querySelector('body').prepend(vid);
 		})
 	</script>
 </body>
