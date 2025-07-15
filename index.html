@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Message List Application</title>
+	<style>
+		body {
+			background: black;
+			color: aqua;
+		}
+
+		video,
+		img,
+		iframe {
+			/* height: 95%; */
+			/* width: 95%; */
+			height: 25rem;
+		}
+
+		ul {
+			display: flex;
+			/* justify-content: center; */
+			align-items: center;
+			width: 95vw;
+			height: 80vh;
+			overflow: scroll;
+		}
+
+		li {
+			display: flex;
+			width: 60rem;
+			height: 40rem;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			margin: 0 2rem;
+		}
+
+		li>div {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		}
+	</style>
+</head>
+
+<body>
+	<message-list></message-list>
+	<!-- <script src="message-list.js"></script> -->
+	<script>
+		class MessageList extends HTMLElement {
+			constructor() {
+				super();
+				this.messages = JSON.parse(localStorage.getItem('messages')) || [];
+				// this.messages = this.messages.reverse();
+				// this.messages.reverse();
+				console.log('[[[[[[[[[[[this.messages]]]]]]]]]]]');
+				console.log(this.messages);
+
+				this.render();
+			}
+
+			connectedCallback() {
+				this.render();
+			}
+
+			addMessage(author, body) {
+				const timestamp = new Date().toISOString();
+				this.messages.push({ author, body, timestamp });
+				localStorage.setItem('messages', JSON.stringify(this.messages));
+				this.render();
+			}
+
+			editMessage(index, author, body) {
+				this.messages[index] = { author, body, timestamp: this.messages[index].timestamp };
+				localStorage.setItem('messages', JSON.stringify(this.messages.reverse()));
+				this.render();
+			}
+
+			deleteMessage(index) {
+				this.messages.splice(index, 1);
+				localStorage.setItem('messages', JSON.stringify(this.messages));
+				this.render();
+			}
+
+			render() {
+				this.innerHTML = `
+						<div>
+							<form id="messageForm">
+								<label for="author">Author:</label>
+								<input type="text" id="author" required>
+								<label for="body">Message:</label>
+								<textarea id="body" required></textarea>
+								<button type="submit">Add Message</button>
+							</form>
+							<ul id="messageList">
+								${this.messages.map((message, index) => `
+									<li>
+										<div>${message.author} - ${new Date(message.timestamp).toLocaleString()}</div>
+										<div>${message.body}</div>
+										<button onclick="editMessage(${index})">Edit</button>
+										<button onclick="deleteMessage(${index})">Delete</button>
+									</li>
+								`).join('')}
+							</ul>
+						</div>
+					`;
+
+				document.getElementById('messageForm').addEventListener('submit', (e) => {
+					e.preventDefault();
+					const author = document.getElementById('author').value;
+					const body = document.getElementById('body').value;
+					this.addMessage(author, body);
+					document.getElementById('author').value = '';
+					document.getElementById('body').value = '';
+				});
+			}
+		}
+
+		customElements.define('message-list', MessageList);
+
+		function editMessage(index) {
+			const message = document.querySelector('message-list').messages[index];
+			document.getElementById('author').value = message.author;
+			document.getElementById('body').value = message.body;
+			document.getElementById('messageForm').addEventListener('submit', (e) => {
+				e.preventDefault();
+				const author = document.getElementById('author').value;
+				const body = document.getElementById('body').value;
+				document.querySelector('message-list').editMessage(index, author, body);
+				document.getElementById('author').value = '';
+				document.getElementById('body').value = '';
+			});
+		}
+
+		function deleteMessage(index) {
+			document.querySelector('message-list').deleteMessage(index);
+		}
+	</script>
+</body>
+
+</html>
