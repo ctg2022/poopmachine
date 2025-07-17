@@ -21,6 +21,7 @@
 
 		ul {
 			display: flex;
+			flex-direction: column;
 			/* justify-content: center; */
 			align-items: center;
 			width: 95vw;
@@ -28,14 +29,14 @@
 			overflow: scroll;
 		}
 
-		li {
+		li, p {
 			display: flex;
 			width: 60rem;
 			height: 40rem;
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			margin: 0 2rem;
+			margin: 5rem 2rem;
 		}
 
 		li>div {
@@ -44,17 +45,70 @@
 			justify-content: center;
 			align-items: center;
 		}
+
+		#messageForm {
+			display: flex;
+			flex-direction: column;
+			padding: 0 30vw;
+			/* justify-content: space-between; */
+			height: 25rem;
+		}
+
+		message-list {
+			width: 100vw;
+			height: 100vh;
+			overflow: hidden;
+			display: flex;
+		}
 	</style>
+
 </head>
 
 <body>
 	<message-list></message-list>
 	<!-- <script src="message-list.js"></script> -->
-	<script>
+
+
+
+
+	<script type="module">
+		let sendBtn = document.querySelector('button[type=submit]');
+		let chatInput = document.querySelector('#body');
+		// let chatContainer = document.getElementById('chat-container');
+		let chatContainer = document.getElementById('messageList');
+		const messages = [];
+		// Import the functions you need from the SDKs you need
+		import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+		import { getDatabase, ref, set, child, get, remove, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js"
+		// TODO: Add SDKs for Firebase products that you want to use
+		// https://firebase.google.com/docs/web/setup#available-libraries
+
+		// Your web app's Firebase configuration
+		const firebaseConfig = {
+			apiKey: "AIzaSyDLv96J9nAJvo4DCPM2SoZg_r9r3vYRsUE",
+			authDomain: "pumachine-f61b6.firebaseapp.com",
+			projectId: "pumachine-f61b6",
+			storageBucket: "pumachine-f61b6.firebasestorage.app",
+			messagingSenderId: "580039710364",
+			databaseURL: "pumachine-f61b6-default-rtdb.firebaseio.com"
+		};
+
+		// Initialize Firebase
+		const app = initializeApp(firebaseConfig);
+		const db = getDatabase(app);
+
+
 		class MessageList extends HTMLElement {
 			constructor() {
 				super();
-				this.messages = JSON.parse(localStorage.getItem('messages')) || [];
+				this.messages = this.getAttribute('messages') || [];
+				console.log('[[[[[[[[[[[supr]]]]]]]]]]]');
+				console.log(this.getAttribute('messages'));
+				console.log('[[[[[[[[gmsg]]]]]]]]');
+				console.log(this.gmsg);
+
+
+				// this.messages = JSON.parse(localStorage.getItem('messages')) || [];
 				// this.messages = this.messages.reverse();
 				// this.messages.reverse();
 				console.log('[[[[[[[[[[[this.messages]]]]]]]]]]]');
@@ -87,40 +141,249 @@
 			}
 
 			render() {
-				this.innerHTML = `
-						<div>
-							<form id="messageForm">
-								<label for="author">Author:</label>
-								<input type="text" id="author" required>
-								<label for="body">Message:</label>
-								<textarea id="body" required></textarea>
-								<button type="submit">Add Message</button>
-							</form>
-							<ul id="messageList">
-								${this.messages.map((message, index) => `
-									<li>
-										<div>${message.author} - ${new Date(message.timestamp).toLocaleString()}</div>
-										<div>${message.body}</div>
-										<button onclick="editMessage(${index})">Edit</button>
-										<button onclick="deleteMessage(${index})">Delete</button>
-									</li>
-								`).join('')}
-							</ul>
-						</div>
-					`;
+				console.log(this.messages);
 
-				document.getElementById('messageForm').addEventListener('submit', (e) => {
-					e.preventDefault();
-					const author = document.getElementById('author').value;
-					const body = document.getElementById('body').value;
-					this.addMessage(author, body);
-					document.getElementById('author').value = '';
-					document.getElementById('body').value = '';
-				});
+				this.innerHTML = `
+							<div>
+								<ul id="messageList">
+									${this.messages.map((message, index) => `
+										<li>
+											<div>${message.author} - ${new Date(message.timestamp).toLocaleString()}</div>
+											<div>${message.body}</div>
+											<button onclick="editMessage(${index})">Edit</button>
+											<button onclick="deleteMessage(${index})">Delete</button>
+										</li>
+									`).join('')}
+								</ul>
+								<form id="messageForm">
+									<label for="author">Author:</label>
+									<input type="text" id="author" required>
+									<label for="body">Message:</label>
+									<textarea id="body" required></textarea>
+									<button type="submit">Add Message</button>
+								</form>
+							</div>
+						`;
+
+				// document.getElementById('messageForm').addEventListener('submit', (e) => {
+				// 	e.preventDefault();
+				// 	console.log('[[[[[[[[[[[[db]]]]]]]]]]]]');
+				// 	console.log(db);
+
+				// 	const author = document.getElementById('author').value;
+				// 	const body = document.getElementById('body').value;
+				// 	this.addMessage(author, body);
+				// 	document.getElementById('author').value = '';
+				// 	document.getElementById('body').value = '';
+				// });
 			}
 		}
 
 		customElements.define('message-list', MessageList);
+
+
+		get(ref(db, `users`)).then((snapshot) => {
+			if (snapshot.exists()) {
+				Object.keys(snapshot.val()).map(key => {
+					messages[key] = snapshot.val()[key];
+					document.querySelector('message-list').setAttribute('messages', messages);
+				})
+				// localStorage.setItem('chat-messages', JSON.stringify(messages));
+				displayStuff(messages);
+			} else {
+				console.log("No data available");
+			}
+		}).catch((error) => {
+			console.error(error);
+		});
+
+		onValue(ref(db, 'users'), (snap) => {
+			snap.val() && displayStuff(snap.val())
+		})
+
+		function writeMsg(obj) {
+			set(ref(db, 'users/' + obj.timestamp), {
+				type: obj.type,
+				author: obj.author,
+				body: obj.text
+			})
+		}
+
+		// Send message
+		// sendBtn.addEventListener('click', (e) => {
+		// 	e.preventDefault();
+		// 	const message = chatInput.value.trim();
+		// 	const tstmp = Date.now();
+		// 	const author = document.querySelector('#author').value;
+		// 	if (message) {
+		// 		// Add message to fbase
+		// 		writeMsg({
+		// 			author: author,
+		// 			text: message,
+		// 			timestamp: tstmp,
+		// 			type: message.includes('<') ? 'html': 'text'
+		// 		})
+		// 		// Add message to localStorage
+		// 		// messages.push({
+		// 		// 	type: 'text',
+		// 		// 	text: message,
+		// 		// 	timestamp: Date.now()
+		// 		// });
+		// 		// localStorage.setItem('chat-messages', JSON.stringify(messages));
+
+		// 		displayStuff();
+		// 	}
+		// });
+
+		// Upload media
+		// uploadBtn.addEventListener('click', () => {
+		// 	uploadInput.click();
+		// });
+
+		// uploadInput.addEventListener('change', (evnt) => {
+		// 	console.log('[[[[[[[[[[evnt.target]]]]]]]]]]');
+		// 	console.log(evnt.target);
+		// 	console.dir(evnt.target);
+
+		// 	const file = evnt.target.files[0];
+		// 	const reader = new FileReader();
+		// 	reader.addEventListener('load', (evt) => {
+		// 		// Add message to localStorage
+		// 		console.log('[[[[[[[[reader]]]]]]]]');
+		// 		console.log(reader);
+		// 		console.log('[[[[[[[[evt.target]]]]]]]]');
+		// 		console.log(evt.target);
+		// 		messages.push({
+		// 			type: file.type.startsWith('image/') ? 'image' : 'video',
+		// 			src: reader.result,
+		// 			timestamp: Date.now()
+		// 		});
+		// 		localStorage.setItem('chat-messages', JSON.stringify(messages));
+
+		// 		// Display message
+		// 		const messageElement = document.createElement('div');
+		// 		messageElement.classList.add('message');
+
+		// 		const timestamp = document.createElement('span');
+		// 		timestamp.classList.add('timestamp');
+		// 		timestamp.textContent = new Date().toLocaleString();
+		// 		messageElement.appendChild(timestamp);
+
+		// 		if (file.type.startsWith('image/')) {
+		// 			const image = document.createElement('img');
+		// 			image.src = reader.result;
+		// 			image.width = 200;
+		// 			messageElement.appendChild(image);
+		// 		} else {
+		// 			const video = document.createElement('video');
+		// 			video.src = reader.result;
+		// 			video.width = 200;
+		// 			video.controls = true;
+		// 			messageElement.appendChild(video);
+		// 		}
+
+		// 		const deleteBtn = document.createElement('span');
+		// 		deleteBtn.classList.add('delete-btn');
+		// 		deleteBtn.textContent = 'Delete';
+		// 		deleteBtn.addEventListener('click', () => {
+		// 			messages.pop();
+		// 			localStorage.setItem('chat-messages', JSON.stringify(messages));
+		// 			messageElement.remove();
+		// 		});
+		// 		messageElement.appendChild(deleteBtn);
+
+		// 		chatContainer.appendChild(messageElement);
+		// 	});
+		// 	reader.readAsDataURL(file);
+		// });
+
+
+		document.getElementById('messageForm').addEventListener('submit', (e) => {
+			e.preventDefault();
+			console.log('[[[[[[[[[[[[db]]]]]]]]]]]]');
+			console.log(db);
+
+			writeMsg({
+				author: document.getElementById('author').value,
+				text: document.getElementById('body').value,
+				timestamp: Date.now(),
+				type: document.getElementById('body').value.includes('<') ? 'html' : 'text'
+			})
+
+
+			document.getElementById('author').value = '';
+			document.getElementById('body').value = '';
+		});
+
+
+		function displayStuff(msgz) {
+			let chatContainer = document.getElementById('messageList');
+			let chatInput = document.querySelector('#body');
+			chatContainer.innerHTML = '';
+			let allmsgs = msgz || {};
+
+			// Display chat messages
+			Object.keys(allmsgs).forEach(key => {
+				const message = allmsgs[key];
+				const messageElement = document.createElement('p');
+				messageElement.innerHTML = message.body;
+				chatContainer.appendChild(messageElement);
+				messageElement.classList.add('message');
+
+				const timestamp = document.createElement('span');
+				timestamp.classList.add('timestamp');
+				timestamp.textContent = new Date(parseInt(key)).toLocaleString();
+				messageElement.appendChild(timestamp);
+
+				const text = document.createElement('span');
+				text.innerHTML = message.author;
+				messageElement.appendChild(text);
+
+				const deleteBtn = document.createElement('span');
+				deleteBtn.classList.add('delete-btn');
+				deleteBtn.setAttribute('id', key);
+				deleteBtn.textContent = 'Delete';
+				deleteBtn.addEventListener('click', () => {
+					console.log("(ref(db, 'users'))")
+					remove(ref(db, 'users/' + key))
+					messageElement.remove();
+				});
+				messageElement.appendChild(deleteBtn);
+
+				chatContainer.appendChild(messageElement);
+			});
+
+			// Clear input
+			chatInput.value = '';
+		}
+
+
+		let el = document.querySelector('label[for=body]');
+		el.addEventListener('copy', (evt) => {
+			let vid = document.createElement('video');
+			vid.src = [
+				"./maybz/bop3jr.mov",
+				"./maybz/boppington1.mov",
+				"./maybz/ad0djo8O_720p.mp4",
+				"./maybz/bopii_clip_rot8.mov",
+				"./maybz/bopii_clip2_rot8.mov",
+				"./maybz/boppo_rot8.mov",
+				"./maybz/boppy.mov",
+			][Math.floor(Math.random() * 7)],
+				// vid.setAttribute('muted', true)
+				vid.setAttribute('loop', true)
+			vid.setAttribute('controls', true)
+			vid.setAttribute('autoplay', true)
+			vid.setAttribute('playsinline', true)
+			vid.classList.add('filth');
+
+			document.querySelector('.filth') && document.querySelector('.filth').remove();
+			document.querySelector('body').prepend(vid);
+		})
+	</script>
+
+
+	<script defer>
 
 		function editMessage(index) {
 			const message = document.querySelector('message-list').messages[index];
@@ -136,32 +399,6 @@
 			});
 		}
 
-		function deleteMessage(index) {
-			document.querySelector('message-list').deleteMessage(index);
-		}
-
-		let el = document.querySelector('label[for=body]');
-		el.addEventListener('copy', (evt) => {
-			let vid = document.createElement('video');
-			vid.src = [
-				"./maybz/bop3jr.mov",
-				"./maybz/boppington1.mov",
-				"./maybz/ad0djo8O_720p.mp4",
-				"./maybz/bopii_clip_rot8.mov",
-				"./maybz/bopii_clip2_rot8.mov",
-				"./maybz/boppo_rot8.mov",
-				"./maybz/boppy.mov",
-			][Math.floor(Math.random() * 7)],
-			// vid.setAttribute('muted', true)
-			vid.setAttribute('loop', true)
-			vid.setAttribute('controls', true)
-			vid.setAttribute('autoplay', true)
-			vid.setAttribute('playsinline', true)
-			vid.classList.add('filth');
-
-			document.querySelector('.filth') && document.querySelector('.filth').remove();
-			document.querySelector('body').prepend(vid);
-		})
 	</script>
 </body>
 
