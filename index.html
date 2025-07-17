@@ -66,7 +66,6 @@
 
 <body>
 	<message-list></message-list>
-	<!-- <script src="message-list.js"></script> -->
 
 
 
@@ -74,14 +73,11 @@
 	<script type="module">
 		let sendBtn = document.querySelector('button[type=submit]');
 		let chatInput = document.querySelector('#body');
-		// let chatContainer = document.getElementById('chat-container');
 		let chatContainer = document.getElementById('messageList');
 		const messages = [];
 		// Import the functions you need from the SDKs you need
 		import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
 		import { getDatabase, ref, set, child, get, remove, onValue } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js"
-		// TODO: Add SDKs for Firebase products that you want to use
-		// https://firebase.google.com/docs/web/setup#available-libraries
 
 		// Your web app's Firebase configuration
 		const firebaseConfig = {
@@ -188,7 +184,7 @@
 					messages[key] = snapshot.val()[key];
 					document.querySelector('message-list').setAttribute('messages', messages);
 				})
-				// localStorage.setItem('chat-messages', JSON.stringify(messages));
+
 				displayStuff(messages);
 			} else {
 				console.log("No data available");
@@ -208,94 +204,6 @@
 				body: obj.text
 			})
 		}
-
-		// Send message
-		// sendBtn.addEventListener('click', (e) => {
-		// 	e.preventDefault();
-		// 	const message = chatInput.value.trim();
-		// 	const tstmp = Date.now();
-		// 	const author = document.querySelector('#author').value;
-		// 	if (message) {
-		// 		// Add message to fbase
-		// 		writeMsg({
-		// 			author: author,
-		// 			text: message,
-		// 			timestamp: tstmp,
-		// 			type: message.includes('<') ? 'html': 'text'
-		// 		})
-		// 		// Add message to localStorage
-		// 		// messages.push({
-		// 		// 	type: 'text',
-		// 		// 	text: message,
-		// 		// 	timestamp: Date.now()
-		// 		// });
-		// 		// localStorage.setItem('chat-messages', JSON.stringify(messages));
-
-		// 		displayStuff();
-		// 	}
-		// });
-
-		// Upload media
-		// uploadBtn.addEventListener('click', () => {
-		// 	uploadInput.click();
-		// });
-
-		// uploadInput.addEventListener('change', (evnt) => {
-		// 	console.log('[[[[[[[[[[evnt.target]]]]]]]]]]');
-		// 	console.log(evnt.target);
-		// 	console.dir(evnt.target);
-
-		// 	const file = evnt.target.files[0];
-		// 	const reader = new FileReader();
-		// 	reader.addEventListener('load', (evt) => {
-		// 		// Add message to localStorage
-		// 		console.log('[[[[[[[[reader]]]]]]]]');
-		// 		console.log(reader);
-		// 		console.log('[[[[[[[[evt.target]]]]]]]]');
-		// 		console.log(evt.target);
-		// 		messages.push({
-		// 			type: file.type.startsWith('image/') ? 'image' : 'video',
-		// 			src: reader.result,
-		// 			timestamp: Date.now()
-		// 		});
-		// 		localStorage.setItem('chat-messages', JSON.stringify(messages));
-
-		// 		// Display message
-		// 		const messageElement = document.createElement('div');
-		// 		messageElement.classList.add('message');
-
-		// 		const timestamp = document.createElement('span');
-		// 		timestamp.classList.add('timestamp');
-		// 		timestamp.textContent = new Date().toLocaleString();
-		// 		messageElement.appendChild(timestamp);
-
-		// 		if (file.type.startsWith('image/')) {
-		// 			const image = document.createElement('img');
-		// 			image.src = reader.result;
-		// 			image.width = 200;
-		// 			messageElement.appendChild(image);
-		// 		} else {
-		// 			const video = document.createElement('video');
-		// 			video.src = reader.result;
-		// 			video.width = 200;
-		// 			video.controls = true;
-		// 			messageElement.appendChild(video);
-		// 		}
-
-		// 		const deleteBtn = document.createElement('span');
-		// 		deleteBtn.classList.add('delete-btn');
-		// 		deleteBtn.textContent = 'Delete';
-		// 		deleteBtn.addEventListener('click', () => {
-		// 			messages.pop();
-		// 			localStorage.setItem('chat-messages', JSON.stringify(messages));
-		// 			messageElement.remove();
-		// 		});
-		// 		messageElement.appendChild(deleteBtn);
-
-		// 		chatContainer.appendChild(messageElement);
-		// 	});
-		// 	reader.readAsDataURL(file);
-		// });
 
 
 		document.getElementById('messageForm').addEventListener('submit', (e) => {
