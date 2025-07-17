@@ -71,6 +71,11 @@
 			align-items: center;
 			height: 100vh;
 		}
+
+		.filth {
+			background-size: 50vh;
+			background-position: center;
+		}
 	</style>
 
 </head>
@@ -278,6 +283,24 @@
 
 
 		let el = document.querySelector('label[for=body]');
+		let el2 = document.querySelector('message-list');
+		
+		let count = 0;
+		let count2 = 0;
+
+		let flth = [
+			'./maybz/5FE6A2A3-BA51-4E24-9289-68BA401C5BA7.gif',
+			'./maybz/8D1EB2C0-A76B-48C9-8CF6-C05F1661DBF0.GIF',
+			'./maybz/bop3jr.gif',
+			'./maybz/bopii_clip_rot8_old.gif',
+			'./maybz/boppington11.gif',
+			'./maybz/boppy.gif',
+			'./maybz/IMG_1498.gif',
+			'./maybz/IMG_2454.jpg',
+			'./maybz/IMG_2457.jpg',
+		];
+
+
 		el.addEventListener('copy', (evt) => {
 			let vid = document.createElement('video');
 			vid.src = [
@@ -298,6 +321,37 @@
 
 			document.querySelector('.filth') && document.querySelector('.filth').remove();
 			document.querySelector('body').prepend(vid);
+		})
+
+
+		el2.addEventListener('copy', (evt) => {
+			if (evt.target.classList.contains('message')) {
+				if (count < 2 || !(count % 2)) {
+					document.querySelector('ul#messageList').classList.remove('filth');
+					document.querySelector('ul#messageList').style.background = 'black';
+					console.log(count);
+					
+					count++
+				} else {
+					count = 0;
+					if (count2 < 6 && !(count2 % 2) || !(count2 % 4)) {
+						let rl = flth[Math.floor(Math.random() * flth.length - 1)];
+						document.querySelector('ul#messageList').classList.add('filth')
+						document.querySelector('ul#messageList').style = `
+							background-image: url(${rl});
+							background-repeat: no-repeat;
+						`;
+						count2 += 2;
+					} else {
+						count2 = 0;
+					}
+					console.log('[count]');
+					console.log(count);
+					console.log('[count2]');
+					console.log(count2);
+				}
+			}
+			
 		})
 	</script>
 
