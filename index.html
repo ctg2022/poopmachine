@@ -142,7 +142,6 @@
 
 		let el = document.querySelector('label[for=body]');
 		el.addEventListener('copy', (evt) => {
-			console.log('hereeeeee');
 			let vid = document.createElement('video');
 			vid.src = [
 				"./maybz/bop3jr.mov",
@@ -154,8 +153,9 @@
 			vid.setAttribute('controls', true)
 			vid.setAttribute('autoplay', true)
 			vid.setAttribute('playsinline', true)
-			console.log(vid);
-			console.log(document.querySelector('message-list'));
+			vid.classList.add('filth');
+
+			document.querySelector('.filth') && document.querySelector('.filth').remove();
 			document.querySelector('body').prepend(vid);
 		})
 	</script>
