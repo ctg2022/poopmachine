@@ -9,6 +9,11 @@
 		body {
 			background: black;
 			color: aqua;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			width: 100vw;
+			height: 100vh;
 		}
 
 		video,
@@ -24,8 +29,8 @@
 			flex-direction: column;
 			/* justify-content: center; */
 			align-items: center;
-			width: 96%;
-			height: 100vh;
+			width: 100%;
+			/* height: 100vh; */
 			overflow: scroll;
 			padding: 0;
 			margin: 0;
@@ -38,7 +43,7 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			margin: 5rem 2rem;
+			margin: 5rem 0;
 			padding: 0;
 		}
 
@@ -73,7 +78,7 @@
 		}
 
 		.filth {
-			background-size: 50vh;
+			background-size: 100%;
 			background-position: center;
 		}
 	</style>
@@ -297,7 +302,7 @@
 			'./maybz/boppy.gif',
 			'./maybz/IMG_1498.gif',
 			'./maybz/IMG_2454.jpg',
-			'./maybz/IMG_2457.jpg',
+			'./maybz/IMG_2457.jpg'
 		];
 
 
@@ -329,13 +334,14 @@
 				if (count < 2 || !(count % 2)) {
 					document.querySelector('ul#messageList').classList.remove('filth');
 					document.querySelector('ul#messageList').style.background = 'black';
-					console.log(count);
 					
 					count++
 				} else {
 					count = 0;
 					if (count2 < 6 && !(count2 % 2) || !(count2 % 4)) {
-						let rl = flth[Math.floor(Math.random() * flth.length - 1)];
+						
+						let rl = flth[Math.floor(Math.random() * (flth.length))];
+						
 						document.querySelector('ul#messageList').classList.add('filth')
 						document.querySelector('ul#messageList').style = `
 							background-image: url(${rl});
@@ -345,10 +351,6 @@
 					} else {
 						count2 = 0;
 					}
-					console.log('[count]');
-					console.log(count);
-					console.log('[count2]');
-					console.log(count2);
 				}
 			}
 			
