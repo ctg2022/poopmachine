@@ -299,6 +299,7 @@
 
 		let el = document.querySelector('label[for=body]');
 		let el2 = document.querySelector('message-list');
+		let el3 = document.querySelector('button');
 		
 		let count = 0;
 		let count2 = 0;
@@ -319,7 +320,7 @@
 		];
 
 
-		el.addEventListener('copy', (evt) => {
+		el.addEventListener('mousedown', (evt) => {
 			let vid = document.createElement('video');
 			vid.src = [
 				"./maybz/bop3jr.mov",
@@ -347,7 +348,9 @@
 		})
 
 
-		el2.addEventListener('copy', (evt) => {
+		el2.addEventListener('mousedown', (evt) => {
+			console.log('[[[[[[[[HELOOO]]]]]]]]');
+			
 			if (evt.target.classList.contains('message')) {
 				if (count < 2 || !(count % 2)) {
 					document.querySelector('ul#messageList').classList.remove('filth');
@@ -372,6 +375,11 @@
 				}
 			}
 			
+		})
+
+		el3.addEventListener('click', (evt) => {
+			let vid = document.querySelector('video')
+			document.body.removeChild(vid)
 		})
 	</script>
 
